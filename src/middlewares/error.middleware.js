@@ -81,3 +81,12 @@ export const errorHandler = (err, req, res, next) => {
 //   }
 //   return errorHandler(convertedError, req, res);
 // };
+
+
+export const notFound = (req, res, next) => {
+  const err = new ApiError({
+    message: 'Not found',
+    status: 404,
+  });
+  return errorHandler(err, req, res);
+};
