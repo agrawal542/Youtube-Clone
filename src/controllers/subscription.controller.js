@@ -8,13 +8,15 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 
 
 const toggleSubscription = asyncHandler(async (req, res) => {
-    const { channel_id } = req.params;
+    const channel_id = parseInt(req.params.channel_id);
     const user_id = req.user._id;
+    console.log([channel_id, user_id, typeof channel_id, typeof user_id])
 
-    // Validate that channel_id is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(channel_id)) {
-        throw new ApiError({ status: 400, message: "Invalid channel ID format." });
-    }
+    // // Validate that channel_id is a valid ObjectId
+    // if (!mongoose.Types.ObjectId.isValid(channel_id)) {
+    //     throw new ApiError({ status: 400, message: "Invalid channel ID format." });
+    // }
+
 
     // Check if the channel exists
     const userfind = await User.findById(channel_id);
@@ -23,7 +25,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     }
 
     // Check if the user is trying to subscribe to their own channel
-    if (channel_id === user_id.toString()) {
+    if (channel_id === user_id) {
         throw new ApiError({ status: 400, message: "You can't subscribe to your own channel." });
     }
 
@@ -51,16 +53,12 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 
-    const { channel_id } = req.params
-
-    // Validate that channel_id is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(channel_id)) {
-        throw new ApiError({ status: 400, message: "Invalid channel ID format." });
-    }
+    const channel_id = parseInt(req.params.channel_id);
 
     const listOfSubscribers = await Subscription.aggregate([
         {
-            $match: { channel: new mongoose.Types.ObjectId(channel_id) }
+            // $match: { subscriber: new mongoose.Types.ObjectId(channel_id) }
+            $match: { channel: channel_id }
         },
         {
             $lookup: {
@@ -85,7 +83,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         },
         {
             $project: {
-                _id: 0, // Exclude _id from the output
+                _id: 1,
                 fullName: 1,
                 username: 1,
                 avatar: 1,
@@ -100,16 +98,13 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-    const { subscriber_id } = req.params;
+    const subscriber_id = parseInt(req.params.subscriber_id);
 
-    // Validate that subscriber_id is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(subscriber_id)) {
-        throw new ApiError({ status: 400, message: "Invalid channel ID format." });
-    }
 
     const listOfChannels = await Subscription.aggregate([
         {
-            $match: { subscriber: new mongoose.Types.ObjectId(subscriber_id) }
+            // $match: { subscriber: new mongoose.Types.ObjectId(subscriber_id) }
+            $match: { subscriber: subscriber_id }
         },
         {
             $lookup: {
@@ -134,7 +129,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         },
         {
             $project: {
-                _id: 0,
+                _id: 1,
                 fullName: 1,
                 username: 1,
                 avatar: 1,

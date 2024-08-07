@@ -1,12 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
+import { addAutoIncrementId } from "../utils/autoIncreament.js";
 
 const userSchema = new Schema(
   {
     watchHistory: [
       {
-        type: Schema.Types.ObjectId,
+        // type: Schema.Types.ObjectId,
+        type: Number,
         ref: "Video",
       },
     ],
@@ -56,6 +58,7 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+addAutoIncrementId(userSchema, 'User');
 
 //encrypt the password
 userSchema.pre("save", async function (next) {

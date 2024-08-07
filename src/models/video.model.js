@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { addAutoIncrementId } from "../utils/autoIncreament.js";
+
 
 const videoSchema = new Schema(
   {
@@ -24,7 +26,7 @@ const videoSchema = new Schema(
     },
 
     duration: {
-      type: Number,
+      type: String,
       required: true,
     },
 
@@ -39,12 +41,15 @@ const videoSchema = new Schema(
     },
 
     owner: {
-      type: Schema.Types.ObjectId,
+      // type: Schema.Types.ObjectId,
+      type: Number,
       ref: "User",
     },
   },
   { timestamps: true }
 );
+
+addAutoIncrementId(videoSchema, 'Video');
 
 videoSchema.plugin(mongooseAggregatePaginate)
 
