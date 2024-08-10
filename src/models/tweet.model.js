@@ -1,4 +1,5 @@
 import mongoose, {Schema} from "mongoose";
+import { addAutoIncrementId } from "../utils/autoIncreament.js";
 
 const tweetSchema = new Schema({
     content: {
@@ -6,9 +7,12 @@ const tweetSchema = new Schema({
         required: true
     },
     owner: {
-        type: Schema.Types.ObjectId,
+        // type: Schema.Types.ObjectId,
+        type: Number,
         ref: "User"
     }
 }, {timestamps: true})
+
+addAutoIncrementId(tweetSchema, 'tweets');
 
 export const Tweet = mongoose.model("Tweet", tweetSchema)
