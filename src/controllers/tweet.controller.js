@@ -23,7 +23,6 @@ const createTweet = asyncHandler(async (req, res, next) => {
 const getUserTweets = asyncHandler(async (req, res) => {
     const { user_id } = req.params;
 
-    // Find the user
     const user = await User.findById(user_id);
     if (!user) {
         throw new ApiError({ status: 404, message: "User not found." });
@@ -37,15 +36,12 @@ const updateTweet = asyncHandler(async (req, res, next) => {
     const { tweet_id } = req.params;
     const { content } = req.body;
 
-    // Check if content is valid
     if (content === undefined || content === null || content.trim() === "") {
         return next(new ApiError({ status: 400, message: "Content cannot be empty" }));
     }
 
-    // Update the tweet
     const result = await Tweet.updateOne({ _id: tweet_id }, { content });
 
-    // Check if the update was successful
     if (result.matchedCount === 0) {
         return next(new ApiError({ status: 404, message: "Tweet not found" }));
     }
@@ -60,7 +56,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
     const result = await Tweet.deleteOne({ _id: tweet_id })
 
     if (result.deletedCount === 0) {
-        throw new ApiError({ status: 400, message: "Error occurred while deleting the video." });
+        throw new ApiError({ status: 400, message: "Error occurred while deleting the tweet." });
     }
     return res.status(200).json(new ApiResponse(200, {}, "tweet Deleted successfully"))
 })
